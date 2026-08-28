@@ -1,13 +1,14 @@
+/*
+ * This file is part of the Evora Client distribution.
+ * Copyright (c) Evora Development.
+ */
+
 package meteordevelopment.meteorclient.gui.themes.evora;
 
-import meteordevelopment.meteorclient.gui.GuiTheme;
 import meteordevelopment.meteorclient.gui.GuiThemes;
-import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.themes.meteor.MeteorGuiTheme;
-import meteordevelopment.meteorclient.gui.widgets.containers.WWindow;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.minecraft.client.gui.screen.Screen;
 
 public class EvoraGuiTheme extends MeteorGuiTheme {
     private final SettingGroup sgColors = settings.getGroup("Colors");
@@ -15,20 +16,6 @@ public class EvoraGuiTheme extends MeteorGuiTheme {
     public final Setting<SettingColor> accentColor = sgColors.add(new ColorSetting.Builder()
         .name("accent-color")
         .description("Evora accent color.")
-        .defaultValue(new SettingColor(180, 180, 190, 255))
-        .build()
-    );
-
-    public final Setting<SettingColor> backgroundColor = sgColors.add(new ColorSetting.Builder()
-        .name("background-color")
-        .description("Panel background color.")
-        .defaultValue(new SettingColor(20, 20, 25, 240))
-        .build()
-    );
-
-    public final Setting<SettingColor> moduleColor = sgColors.add(new ColorSetting.Builder()
-        .name("module-color")
-        .description("Active module highlight color.")
         .defaultValue(new SettingColor(180, 180, 190, 255))
         .build()
     );
