@@ -37,8 +37,6 @@ public class EvoraGuiTheme extends MeteorGuiTheme {
         scrollbar.set(new SettingColor(180, 180, 190, 200));
         separator.set(new SettingColor(60, 60, 65, 255));
         moduleBackground.set(new SettingColor(20, 20, 25, 240));
-        danger.set(new SettingColor(200, 60, 60, 255));
-        warning.set(new SettingColor(200, 160, 60, 255));
     }
 
     public static void init() {
