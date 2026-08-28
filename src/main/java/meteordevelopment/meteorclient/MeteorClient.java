@@ -1,6 +1,6 @@
 /*
- * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
- * Copyright (c) Meteor Development.
+ * This file is part of the Evora Client distribution.
+ * Copyright (c) Evora Development.
  */
 
 package meteordevelopment.meteorclient;
@@ -14,6 +14,7 @@ import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.gui.GuiThemes;
 import meteordevelopment.meteorclient.gui.WidgetScreen;
 import meteordevelopment.meteorclient.gui.tabs.Tabs;
+import meteordevelopment.meteorclient.gui.themes.evora.EvoraGuiTheme;
 import meteordevelopment.meteorclient.systems.Systems;
 import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.hud.screens.AddHudElementScreen;
@@ -50,7 +51,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MeteorClient implements ClientModInitializer {
-    public static final String MOD_ID = "meteor-client";
+    public static final String MOD_ID = "evora-client";
     public static final ModMetadata MOD_META;
     public static final String NAME;
     public static final Version VERSION;
@@ -72,7 +73,6 @@ public class MeteorClient implements ClientModInitializer {
 
         String versionString = MOD_META.getVersion().getFriendlyString();
         Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)").matcher(versionString);
-        // When building and running through IntelliJ and not Gradle it doesn't replace the version so just use a dummy
         versionString = !matcher.find() ? "0.0.0" : "%s.%s.%s".formatted(matcher.group(1), matcher.group(2), matcher.group(3));
 
         VERSION = new Version(versionString);
@@ -86,7 +86,6 @@ public class MeteorClient implements ClientModInitializer {
             return;
         }
 
-        // Global minecraft client accessor
         mc = Minecraft.getInstance();
 
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
@@ -96,17 +95,18 @@ public class MeteorClient implements ClientModInitializer {
 
         LOG.info("Initializing {}", NAME);
 
-        // Pre-load
         if (!FOLDER.exists()) {
             FOLDER.getParentFile().mkdirs();
             FOLDER.mkdir();
             Systems.addPreLoadTask(() -> Modules.get().get(DiscordPresence.class).enable());
         }
 
+        // Register Evora theme
+        EvoraGuiTheme.init();
+
         // Register addons
         AddonManager.init();
 
-        // Register event handlers
         AddonManager.ADDONS.forEach(addon -> {
             try {
                 EVENT_BUS.registerLambdaFactory(addon.getPackage(), (lookupInMethod, klass) -> (MethodHandles.Lookup) lookupInMethod.invoke(null, klass, MethodHandles.lookup()));
@@ -176,8 +176,6 @@ public class MeteorClient implements ClientModInitializer {
         else if (Utils.canOpenGui()) Tabs.get().getFirst().openScreen(GuiThemes.get());
     }
 
-    // Hide HUD
-
     private boolean wasWidgetScreen, wasHudHiddenRoot;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -185,8 +183,6 @@ public class MeteorClient implements ClientModInitializer {
         if (event.screen instanceof WidgetScreen) {
             if (!wasWidgetScreen) wasHudHiddenRoot = mc.gameRenderer.gameRenderState().guiRenderState.isHudHidden;
             if (GuiThemes.get().hideHUD() || wasHudHiddenRoot) {
-                // Always show the MC HUD in the HUD editor screen since people like
-                // to align some items with the hotbar or chat
                 mc.gameRenderer.gameRenderState().guiRenderState.isHudHidden = !(event.screen instanceof HudEditorScreen)
                     && !(event.screen instanceof AddHudElementScreen)
                     && !(event.screen instanceof HudElementScreen);
