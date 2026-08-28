@@ -15,23 +15,25 @@ public class Categories {
     public static final Category Mace = new Category("Mace", () -> DisplayItemUtils.toStack(Items.MACE));
     public static final Category Spear = new Category("Spear", () -> DisplayItemUtils.toStack(Items.TRIDENT));
     public static final Category Movement = new Category("Movement", () -> DisplayItemUtils.toStack(Items.DIAMOND_BOOTS));
+    public static final Category Render = new Category("Visual", () -> DisplayItemUtils.toStack(Items.GLASS));
     public static final Category Misc = new Category("Misc", () -> DisplayItemUtils.toStack(Items.LAVA_BUCKET));
-    public static final Category Visual = new Category("Visual", () -> DisplayItemUtils.toStack(Items.GLASS));
+    public static final Category Player = new Category("Player", () -> DisplayItemUtils.toStack(Items.ARMOR_STAND));
+    public static final Category World = new Category("World", () -> DisplayItemUtils.toStack(Items.GRASS_BLOCK));
 
     public static boolean REGISTERING;
 
     public static void init() {
         REGISTERING = true;
 
-        // Evora
         Modules.registerCategory(Combat);
         Modules.registerCategory(Mace);
         Modules.registerCategory(Spear);
         Modules.registerCategory(Movement);
+        Modules.registerCategory(Render);
         Modules.registerCategory(Misc);
-        Modules.registerCategory(Visual);
+        Modules.registerCategory(Player);
+        Modules.registerCategory(World);
 
-        // Addons
         AddonManager.ADDONS.forEach(MeteorAddon::onRegisterCategories);
 
         REGISTERING = false;
