@@ -1,6 +1,6 @@
 /*
- * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
- * Copyright (c) Meteor Development.
+ * This file is part of the Evora Client distribution.
+ * Copyright (c) Evora Development.
  */
 
 package meteordevelopment.meteorclient.systems.modules;
@@ -144,7 +144,6 @@ public class Modules extends System<Modules> {
         return moduleInstances.values();
     }
 
-
     public int getCount() {
         return moduleInstances.size();
     }
@@ -212,16 +211,10 @@ public class Modules extends System<Modules> {
         }
     }
 
-    // Binding
-
     public void setModuleToBind(@Nullable Module moduleToBind) {
         this.moduleToBind = moduleToBind;
     }
 
-    /***
-     * @see meteordevelopment.meteorclient.commands.commands.BindCommand
-     * For ensuring we don't instantly bind the module to the enter key.
-     */
     public void awaitKeyRelease() {
         this.awaitingKeyRelease = true;
     }
@@ -286,8 +279,6 @@ public class Modules extends System<Modules> {
             }
         }
     }
-
-    // End of binding
 
     @EventHandler(priority = EventPriority.HIGHEST + 1)
     private void onOpenScreen(OpenScreenEvent event) {
@@ -364,35 +355,29 @@ public class Modules extends System<Modules> {
     // INIT MODULES
 
     public void add(Module module) {
-        // Check if the module's category is registered
         if (!CATEGORIES.contains(module.category)) {
             throw new RuntimeException("Modules.addModule - Module's category was not registered.");
         }
 
-        // Remove the previous module with the same name
         AtomicReference<Module> removedModule = new AtomicReference<>();
         if (moduleInstances.values().removeIf(module1 -> {
             if (module1.name.equals(module.name)) {
                 removedModule.set(module1);
                 module1.settings.unregisterColorSettings();
-
                 return true;
             }
-
             return false;
         })) {
             getGroup(removedModule.get().category).remove(removedModule.get());
         }
 
-        // Add the module
         moduleInstances.put(module.getClass(), module);
         getGroup(module.category).add(module);
-
-        // Register color settings for the module
         module.settings.registerColorSettings(module);
     }
 
     private void initCombat() {
+        add(new AnchorMacro());
         add(new AnchorAura());
         add(new AntiAnvil());
         add(new AntiBed());
