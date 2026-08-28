@@ -1,6 +1,6 @@
 /*
- * This file is part of the Meteor Client distribution (https://github.com/MeteorDevelopment/meteor-client).
- * Copyright (c) Meteor Development.
+ * This file is part of the Evora Client distribution.
+ * Copyright (c) Evora Development.
  */
 
 package meteordevelopment.meteorclient.systems.modules;
@@ -12,24 +12,24 @@ import net.minecraft.world.item.Items;
 
 public class Categories {
     public static final Category Combat = new Category("Combat", () -> DisplayItemUtils.toStack(Items.GOLDEN_SWORD));
-    public static final Category Player = new Category("Player", () -> DisplayItemUtils.toStack(Items.ARMOR_STAND));
+    public static final Category Mace = new Category("Mace", () -> DisplayItemUtils.toStack(Items.MACE));
+    public static final Category Spear = new Category("Spear", () -> DisplayItemUtils.toStack(Items.TRIDENT));
     public static final Category Movement = new Category("Movement", () -> DisplayItemUtils.toStack(Items.DIAMOND_BOOTS));
-    public static final Category Render = new Category("Render", () -> DisplayItemUtils.toStack(Items.GLASS));
-    public static final Category World = new Category("World", () -> DisplayItemUtils.toStack(Items.GRASS_BLOCK));
     public static final Category Misc = new Category("Misc", () -> DisplayItemUtils.toStack(Items.LAVA_BUCKET));
+    public static final Category Visual = new Category("Visual", () -> DisplayItemUtils.toStack(Items.GLASS));
 
     public static boolean REGISTERING;
 
     public static void init() {
         REGISTERING = true;
 
-        // Meteor
+        // Evora
         Modules.registerCategory(Combat);
-        Modules.registerCategory(Player);
+        Modules.registerCategory(Mace);
+        Modules.registerCategory(Spear);
         Modules.registerCategory(Movement);
-        Modules.registerCategory(Render);
-        Modules.registerCategory(World);
         Modules.registerCategory(Misc);
+        Modules.registerCategory(Visual);
 
         // Addons
         AddonManager.ADDONS.forEach(MeteorAddon::onRegisterCategories);
