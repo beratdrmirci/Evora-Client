@@ -13,6 +13,7 @@ import meteordevelopment.orbit.EventHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -58,7 +59,7 @@ public class AnchorMacro extends Module {
     private BlockPos anchorPos = null;
 
     public AnchorMacro() {
-        super(Categories.Combat, "anchor-macro", "Anchor'u otomatik koyar, şarj eder ve patlatır. Modülü aç/kapat tuşuna bas.");
+        super(Categories.Combat, "anchor-macro", "Anchor'u otomatik koyar, şarj eder ve patlatır.");
     }
 
     @Override
@@ -92,7 +93,7 @@ public class AnchorMacro extends Module {
         BlockPos target = findBestPlacementPos();
         if (target == null) {
             if (silentAim.get()) {
-                float targetPitch = Math.min(mc.player.getXRot() + (float) aimSpeed.get().doubleValue(), 89.9f);
+                float targetPitch = Math.min(mc.player.getXRot() + aimSpeed.get().floatValue(), 89.9f);
                 sendSilentRotation(mc.player.getYRot(), targetPitch);
             }
             return;
@@ -107,7 +108,7 @@ public class AnchorMacro extends Module {
             false
         );
 
-        mc.gameMode.useItemOn(mc.player, mc.player.getMainHandItem(), hit);
+        mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit);
         anchorPos = target;
         stage = Stage.CHARGE;
     }
@@ -127,7 +128,7 @@ public class AnchorMacro extends Module {
             false
         );
 
-        mc.gameMode.useItemOn(mc.player, mc.player.getMainHandItem(), hit);
+        mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit);
         stage = glowstoneShield.get() ? Stage.SHIELD : Stage.EXPLODE;
     }
 
@@ -142,7 +143,6 @@ public class AnchorMacro extends Module {
 
         BlockPos shieldPos = anchorPos.above();
 
-        // Zaten blok varsa direkt patlat
         if (!mc.level.getBlockState(shieldPos).isAir()) {
             stage = Stage.EXPLODE;
             return;
@@ -157,14 +157,13 @@ public class AnchorMacro extends Module {
             false
         );
 
-        mc.gameMode.useItemOn(mc.player, mc.player.getMainHandItem(), hit);
+        mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit);
         stage = Stage.EXPLODE;
     }
 
     private void explodeAnchor() {
         if (anchorPos == null) { toggle(); return; }
 
-        // Totem offhand'de mi
         if (mc.player.getOffhandItem().getItem() != Items.TOTEM_OF_UNDYING) {
             toggle();
             return;
@@ -177,18 +176,16 @@ public class AnchorMacro extends Module {
             false
         );
 
-        mc.gameMode.useItemOn(mc.player, mc.player.getMainHandItem(), hit);
+        mc.gameMode.useItemOn(mc.player, InteractionHand.MAIN_HAND, hit);
         toggle();
     }
 
     private BlockPos findBestPlacementPos() {
-        // Aşağı bakıyorsa ayak altı
         if (placeAtFeet.get() && mc.player.getXRot() > 60) {
             BlockPos feet = mc.player.blockPosition().below();
             if (canPlace(feet)) return feet;
         }
 
-        // En uzak yerleştirilebilir pozisyon
         BlockPos best = null;
         double bestDist = -1;
         BlockPos origin = mc.player.blockPosition();
@@ -213,11 +210,10 @@ public class AnchorMacro extends Module {
     private boolean canPlace(BlockPos pos) {
         if (!mc.level.getBlockState(pos).isAir()) return false;
         BlockPos below = pos.below();
-        return mc.level.getBlockState(below).isSolid();
+        return !mc.level.getBlockState(below).isAir();
     }
 
     private int findItem(net.minecraft.world.item.Item item) {
-        // Hotbar: 0-8
         for (int i = 0; i < 9; i++) {
             if (mc.player.getInventory().getItem(i).getItem() == item) return i;
         }
