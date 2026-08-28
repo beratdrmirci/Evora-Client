@@ -10,11 +10,14 @@ import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.orbit.EventHandler;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -86,6 +89,11 @@ public class AnchorMacro extends Module {
         }
     }
 
+    private void switchToSlot(int slot) {
+        mc.player.getInventory().selected = slot;
+        mc.getConnection().send(new ServerboundSetCarriedItemPacket(slot));
+    }
+
     private void placeAnchor() {
         int anchorSlot = findItem(Items.RESPAWN_ANCHOR);
         if (anchorSlot == -1) { toggle(); return; }
@@ -99,7 +107,7 @@ public class AnchorMacro extends Module {
             return;
         }
 
-        mc.player.getInventory().selected = anchorSlot;
+        switchToSlot(anchorSlot);
 
         BlockHitResult hit = new BlockHitResult(
             Vec3.atCenterOf(target),
@@ -119,7 +127,7 @@ public class AnchorMacro extends Module {
         int glowstoneSlot = findItem(Items.GLOWSTONE);
         if (glowstoneSlot == -1) { toggle(); return; }
 
-        mc.player.getInventory().selected = glowstoneSlot;
+        switchToSlot(glowstoneSlot);
 
         BlockHitResult hit = new BlockHitResult(
             Vec3.atCenterOf(anchorPos),
@@ -148,7 +156,7 @@ public class AnchorMacro extends Module {
             return;
         }
 
-        mc.player.getInventory().selected = glowstoneSlot;
+        switchToSlot(glowstoneSlot);
 
         BlockHitResult hit = new BlockHitResult(
             Vec3.atCenterOf(shieldPos),
@@ -209,8 +217,7 @@ public class AnchorMacro extends Module {
 
     private boolean canPlace(BlockPos pos) {
         if (!mc.level.getBlockState(pos).isAir()) return false;
-        BlockPos below = pos.below();
-        return !mc.level.getBlockState(below).isAir();
+        return !mc.level.getBlockState(pos.below()).isAir();
     }
 
     private int findItem(net.minecraft.world.item.Item item) {
